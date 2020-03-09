@@ -1,0 +1,7 @@
+0: background
+1: skin
+2: hair
+3: tshirt
+4: shoes
+5: pants
+6: dress

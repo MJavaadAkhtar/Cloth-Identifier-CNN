@@ -1,0 +1,399 @@
+<html>
+<head>
+<title>Deep Learning Project</title>
+<link href='http://fonts.googleapis.com/css?family=Nunito:300|Crimson+Text|Droid+Sans+Mono' rel='stylesheet' type='text/css'>
+<link rel="stylesheet" title="Default" href="styles/github.css">
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.2/jquery.min.js"></script>  
+
+<link rel="stylesheet" href="highlighting/styles/default.css">
+<script src="highlighting/highlight.pack.js"></script>
+
+<style type="text/css">
+body {
+	margin: 0px;
+	width: 100%;
+	font-family: 'Crimson Text', serif;
+	font-size: 20px;
+	background: #fcfcfc;
+}
+h1 {
+	font-family: 'Nunito', sans-serif;
+	font-weight: normal;
+	font-size: 28px;
+	margin: 25px 0px 0px 0px;
+	/*text-transform: lowercase;*/
+
+}
+
+h2 {
+	font-family: 'Nunito', sans-serif;
+	font-weight: normal;
+	font-size: 32px;
+	margin: 15px 0px 35px 0px;
+	color: #333;	
+	word-spacing: 3px;
+}
+
+h3 {
+	font-family: 'Nunito', sans-serif;
+	font-weight: normal;
+	font-size: 26px;
+	margin: 10px 0px 10px 0px;
+	color: #333;
+	word-spacing: 2px;
+}
+h4 {
+	font-family: 'Nunito', sans-serif;
+	font-weight: normal;
+	font-size: 22px;
+	margin: 10px 0px -10px 0px;
+	color: #333;
+	word-spacing: 2px;
+}
+
+h5 {
+	font-family: 'Nunito', sans-serif;
+	font-weight: normal;
+	font-size: 18px;
+	margin: 10px 0px -10px 0px;
+	color: #111;
+	word-spacing: 2px;
+}
+
+p, li {
+	color: #444;
+}
+
+a {
+	color: #DE3737;
+}
+
+.container {
+	margin: 0px auto 0px auto;
+	width: 1160px;
+}
+
+#header {
+	background: #333;
+	width: 100%;
+}
+
+#headersub {
+	color: #ccc;
+	width: 1160px;
+	margin: 0px auto 0px auto;
+	padding: 20px 0px 20px 0px;
+}
+
+.chart {
+	width: 480px;
+}
+.lol {
+	font-size: 16px;
+	color: #888;
+	font-style: italic;
+}
+.sep {
+	height: 1px;
+	width: 100%;
+	background: #999;
+	margin: 20px 0px 20px 0px;
+}
+.footer{
+	font-size: 16px;
+}
+.latex {
+	width: 100%;
+}
+
+.latex img {
+	display: block;
+	margin: 0px auto 0px auto;
+}
+
+pre {
+	font-family: 'Droid Sans Mono';
+	font-size: 14px;
+}
+
+table td {
+  text-align: center;
+  vertical-align: middle;
+}
+
+table td img {
+  text-align: center;
+  vertical-align: middle;
+}
+
+#contents a {
+}
+img {
+	display:block;
+	margin-left:auto;
+	margin-right:auto;
+}
+
+</style>
+<script type="text/javascript">
+    hljs.initHighlightingOnLoad();
+</script>
+</head>
+<body>
+<div id="header" >
+<div id="headersub">
+<h1>Neeraj J. DeLima</h1>
+</div>
+</div>
+<div class="container">
+
+<h2> Project 6: Deep Learning</h2>
+
+<div style="float: right; padding: 20px">
+<img src="placeholder.jpg" />
+<p style="font-size: 14px">Example of a right floating element.</p>
+</div>
+
+<p> 	Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+
+<ol>
+<li>list element 1.</li>
+<li>list element 2.</li>
+<li>etc.</li>
+</ol>
+
+<p> 	Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+
+<div style="clear:both">
+<h3>Part 1: Training a deep network from scratch</h3>
+<hr />
+
+<p>In part 1, we start with a convolutional neural net architecture used on the 15 scene database. It doesn't perform very well - 30% top-1 accuracy which is much worse than bags of SIFT / SVM from project 4 - and we explore changes to the architecture and data to improve its performance</p>
+
+<h5><strong>Establishing a baseline</strong></h5>
+
+<p>The first step was to run the given neural net architecture on the 15 scene database and see how it does. That will give us some baseline performance on which we can make adjustments and improve. The architecture is illustrated below</p>
+
+<img src="images/part1/baseline_architecture.png" />
+
+<p>We can see 4 hidden layers: a convolutional layer, a max pool layer, a ReLU layer, and another convolutional layer. Following this, the output layer calculates the softmax loss in order to perform the actuall 15-way classification task. We can now run the net on the data with the following hyperparameters:</p>
+
+<pre><code>%opts.batchSize is the number of training images in each batch. You don't
+%need to modify this.
+opts.batchSize = 50 ;
+
+% opts.learningRate is a critical parameter that can dramatically affect
+% whether training succeeds or fails. For most of the experiments in this
+% project the default learning rate is safe.
+opts.learningRate = 0.0001 ;
+
+% opts.numEpochs is the number of epochs. If you experiment with more
+% complex networks you might need to increase this. Likewise if you add
+% regularization that slows training.
+opts.numEpochs = 50 ;</code></pre>
+
+<p>The learning curve is illustrated below:</p>
+
+<img src="images/part1/baseline_learningcurve.png" />
+
+<p>We can see from the top-1 error curve that training error does continue to go down, but the validation error (our test set for these purposes) tapers off after around 30 epochs. The lowest validation error we were able to get was 70%, meaning our accuracy was at around <strong>30%</strong>.After this point, we'd be overfitting, with the training error going towards 0 without much improvement in the test performance. We can see also that the filters learned by the first convolutional layer don't make too much sense intuitively:</p>
+
+<img src="images/part1/baseline_filters.png" />
+
+<p>So essentially, we're stagnant here. Training the net for longer wouldn't really improve performance - we need to make improvements elsewhere.</p>
+
+<h5><strong>Improvement #1: Increasing our training data by "jittering"</strong></h5>
+
+<p>A major bottleneck in the pipeline is the amount of training data - the 15 scene database doesn't have enough. We can artificially increase the amount of training data by "jittering", which involves operations such as zooming, randomly cropping, shifting slightly on each training images. These are all operations that preserve the class of the training image, so essentially gives you a "free" training image.</p>
+<p>Here, we jitter the data by mirroring it. A scene will never change class with a left-right mirroring, so it's a safe operation for our purposes. By doing this to every image, we essentially doubled the training data (not really because an image and its mirror aren't truly independent).</p>
+
+<p>The results of training the net on the jittered data are shown below. We can clearly see that it takes much longer for the error to drop. I had to increase the number of epochs to 200, and by doing we notice that the validation error keeps decreasing until around the 125 epoch mark, at which point it starts to slowly go up. This point is most likely where it starts overfitting.</p>
+
+<img src="images/part1/jittering/learning_curve1.png" />
+
+<p>Nevertheless, we were able to see an increase in accuracy. The lowest validation error was 0.652667 which means we had an accuracy of around <strong>35%</strong>.</p>
+
+<h5><strong>Improvement #2: Zero centering the images</strong></h5>
+
+<p>The next improvement we make is zero-centering: we comput the mean of all the training images and then subtract that from each image. CNNs work significantly better when given zero-centered, normalized data and a large part of why is that the effectiveness of the nonlinearity hinges on the data being close to zero. If all the values were centered at 100,000 (or some other really high value), the ReLU unit would have a negligible effect on the data, rendering it mostly useless. By having the data centered around zero, small changes in the parameters result in large ReLU responses, so we get larger gradient magnitudes with small changes to parameters. This allows us to step more quickly towards the optimum in gradient descent.</p>
+
+<p>Indeed, we can see a lot of these results in the learning curve below. Because of the aforementioned effects, we see the validation error drop sharply at the beginning, during the first 10-15 epochs. The lowest validation error achieved was 0.474000, meaning our accuracy has increased around 18%, to <strong>53%</strong>.</p>
+
+<img src="images/part1/zero_centering/learning_curve2.png" />
+
+<p>Another interesting thing to note at this time are the learned filters in the first convolutional layer. We can see below that while they still don't make complete intuitive sense, they aren't completely random anymore. For example, we can clearly see sensitivity to horizontal gradients in the filter in the top row, third from left, and likewise for vertical gradients in the filter in the third row, first from left.</p>
+<img src="images/part1/zero_centering/filters2.png" />
+
+<h5><strong>Improvement #3: Regularization</strong></h5>
+
+<p>A third improvement we make is regularization, a method to fight overfitting. We do so by adding a dropout layer to the net, which randomly turns off network connections at training time. This effectively trains several "thinner" versions of the net, the average of which is the prediction at test time.</p>
+
+<p>Adding dropout regularization definitely slowed the drop in training error - which means I had to run the training algorithm for more epochs. We did see an increase in accuracy as a result of regularization - the lowest validation error was 0.435333, meaning our best validation accuracy was around <strong>56.5%</strong></p>
+
+<img src="images/part1/regularization/learning_curve1.png" />
+
+<p>When we take a look at the filters, we can see even more learned structure emerge:</p>
+
+<img src="images/part1/regularization/filters1.png" />
+
+<h5><strong>Improvement #4: Adding batch normalization layers</strong></h5>
+
+<p>Up to this point, training deep networks has been extremely slow, which limits how much we can explore different architectures (per time period). To help with this, we try normalizing by adding a batch normalization layer after each convolutional layer except the last. This allows us to use higher learning rates, and tinker with different network architectures (in the following section).</p>
+
+<p>One thing I immediately noticed was that the first layer filters started making intuitive sense (in their structure) much quicker than before. Here's what they looked like after just 20 epochs:</p>
+
+<img src="images/part1/batch_normalization/filters_20_epochs.png" />
+
+<p>With batch normalization, we were able to achieve similar accuracy but in much shorter time by increasing the learning rate by a factor of 10, to 0.001. Using the same deep network architecture as before (with a batch normalization layer added), we were able to achieve a top-1 error of 0.490667 (51% accuracy) in only 50 epochs, compared to the 56.5% accuracy in 200 epochs from before</p>
+
+<img src="images/part1/batch_normalization/learning_curve1.png" />
+
+<h5><strong>Improvement #5: Tinkering with the network architecture</strong></h5>
+
+<p>So far, the best accuracy we've been able to achieve in 50 epochs is 51% - we were able to get to 56.5% accuracy but in 200 epochs which took way too long to run multiple experiments. Adding batch normalization allowed us to use a higher learning rate and thus decrease training time, so the next step would be to make our network architecture more complex in an attempt to further improve our accuracy.</p>
+
+<u>Experiment 1</u>
+
+<p>To improve the network, I studied the architecture off the VGG-F net from part 2 and used some design patterns from there. The major changes were:</p>
+
+<ol>
+	<li>Adding two additional convolutional layers</li>
+	<li>Smoothly decreasing the spatial resolution and smoothly increasing the filter depth as we move up the network. Went from (9x9 resolution, 1 depth) to (6x6 resolution, 16 depth) to (3x3 resolution, 32 depth).</li>
+	<li>Changed the pooling layer after conv1 to be an average pooling layer</li>
+	<li>Batch normalization layers were added after all conv layers, and dropout regularization layers were added after conv2 and conv3.</li>
+</ol>
+
+<img src="images/part1/deepening/architecture1.png" />
+
+<p>This network architecture did improve our accuracy. In 50 epochs, we were able to achieve a top-1 validation error of 0.455333 or about a 54.5% accuracy, better than anything we've been able to achieve in 50 epochs so far. The learning curve for this experiment is below:</p>
+
+<img src="images/part1/deepening/learning_curve1.png" />
+
+<u>Experiment 2</u>
+
+<p>I wasn't so sure that decreasing the spatial resolution of convolutional filters was actually helping accuracy in the 15 scene database - it didn't make much intuitive sense for scene recognition. I changed the architecture of the network, making the spatial resolution of all convolutional layers 5x5 and trained the network again:</p>
+
+<img src="images/part1/deepening/architecture2.png" />
+
+<p>Turns out my intuition was correct. Making all the convolutional filters 5x5 lowered the validation error to 0.414667 (accuracy of 58.5%) in 50 epochs:</p>
+
+<img src="images/part1/deepening/learning_curve2.png" />
+
+<p>I've included the 5x5 learning filters below. We might say that the filters are more skewed towards being sensitive to color patches than gradients.</p>
+
+<img src="images/part1/deepening/filters2.png" />
+
+
+<h3>Part 2: Fine-tuning a pre-trained deep network</h3>
+<hr />
+
+<p>In the previous section we attempted to design a deep network architecture by hand and train it on our 15 scene database. As we could see, there was a cap on how accurate we could be, and it didn't seem like we could outperform hand crafted features without acquiring much more training data.</p>
+
+<p>In Part 2, we <i>fine-tune</i> the VGG-F network to learn to classify the 15 scene database. First, we load the vgg-f net:</p>
+
+<pre><code>net = load('../matconvnet-1.0-beta25/imagenet-vgg-f.mat') ;</code></pre>
+
+<p>Next, we edit the network while preserving its learned weights:</p>
+
+<pre><code>% Remove the final two layers: fc8 and softmax
+net.layers(end) = [] ;
+net.layers(end) = [] ;
+
+% Specify them again for our fine tuning purposes
+net.layers{end+1} = struct('type', 'conv', ...
+                           'weights', {{f*randn(1,1,4096,15, 'single'), zeros(15, 1, 'single')}}, ...
+                           'stride', 1, ...
+                           'pad', 0, ...
+                           'name', 'fc8');
+
+net.layers{end+1} = struct('type', 'softmaxloss') ;</code></pre>
+
+<p>We also want to add dropout layers, which are not included in the provided matrix:</p>
+
+<pre><code>% Add the dropout layers
+dropoutLayer = struct('type', 'dropout', 'rate', 0.5) ;
+net.layers = [net.layers(1:17), dropoutLayer, net.layers(18:end)] ;
+net.layers = [net.layers(1:20), dropoutLayer, net.layers(21:end)] ;</code></pre>
+
+<p>The last step is to prepare the data for VGG-F, which involved resizing the images to 224x224, normalizing them, and converting them to 3 channel images.</p>
+
+<p>After this, it was time to train the network on the 15 scene database. Since we preserved the weights of VGG-F and simply changed the last 2 layers, this is essentially training VGG-F from scratch but with far better initialization than random. This can have a immense effect, as we will see, because the top-1 validation error dropped to 0.1444, meaning we were able to achieve an accuracy of 85.6%! It only took 5 epochs to achieve this.</p>
+
+<img src="images/part2/no_changes/learning_curve3.png" />
+
+<p>It is interesting to note here the learned filters. They all have clear structure to them - a good number are sensitive to gradients in various directions, and others are sensitive to color blobs and patches that might be used to define certain scenes - very interesting to see!</p>
+
+<img src="images/part2/no_changes/filters2.png" />
+
+<h5><strong>Jittering</strong></h5>
+
+<p>Adding the mirror image jittering saw no appreciable effect in accuracy - it actually dropped marginally to 84%.</p>
+
+<h3>Part 3: Recognizing Human Object Sketches (Extra Credit)</h3>
+<hr />
+
+<p>I wanted to see what it would be like to try a completely different recognition task. In this section, I illustrate the results I got from training CNNs on a dataset of human object sketches from the <a href="http://cybertron.cg.tu-berlin.de/eitz/projects/classifysketch/">"How Do Humans Sketch Objects?"</a> paper.
+
+<img src="images/part3/paper.png" />
+
+<u>Experiment 1: ConvNet from part 1</u>
+
+<p>The first experiment I ran was to see how my network from part 1 of the project performed on this new task. This net did pretty well on the 15 scene database (54.5% in 50 epochs), so applying it to a different task might give us some valuable insights on how specific a network architecture is to the task it's performing.</p>
+
+<p>From running the experiment, however, it became clear that this architecture was ill suited for sketch detection. From the learning curve below, we see that while the training error steadily decreased, the top-1 validation error jumped all over the place. The learned weights and filters did not seem to generalize well at all to unseen test data.</p>
+
+<img src="images/part3/experiment1/learning_curve.png" />
+
+<p>The lowest validation error seen during any epoch was around 0.65, meaning our highest accuracy is 35%. While of course this isn't a terrible accuracy, it isn't great either, and certainly doesn't outperform the 56% achieved by the bag-of-features/multi-class SVM pipeline from the original paper.</p>
+
+
+<p> 	Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+
+<h2>Example of code with highlighting</h2>
+The javascript in the <code>highlighting</code> folder is configured to do syntax highlighting in code blocks such as the one below.<p>
+
+<pre><code>
+%example code
+for i = 1:length(offset)
+    source = imread(sprintf('%s/source_%02d.jpg',data_dir,i));
+    mask   = imread(sprintf('%s/mask_%02d.jpg',data_dir,i));
+    target = imread(sprintf('%s/target_%02d.jpg',data_dir,i));
+
+</code></pre>
+
+<h3>Results in a table</h3>
+
+<table border=1>
+<tr>
+<td>
+<img src="placeholder.jpg" width="24%"/>
+<img src="placeholder.jpg"  width="24%"/>
+<img src="placeholder.jpg" width="24%"/>
+<img src="placeholder.jpg" width="24%"/>
+</td>
+</tr>
+
+<tr>
+<td>
+<img src="placeholder.jpg" width="24%"/>
+<img src="placeholder.jpg"  width="24%"/>
+<img src="placeholder.jpg" width="24%"/>
+<img src="placeholder.jpg" width="24%"/>
+</td>
+</tr>
+
+</table>
+
+<center>
+
+<img src="plot.png">
+<p>
+<img src="filters.png">
+
+</center>
+
+<div style="clear:both" >
+<p> 	Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+</div>
+</body>
+</html>
